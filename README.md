@@ -13,16 +13,18 @@ This project uses Terraform to create an EC2 instance on AWS.
 ├── .gitignore
 ├── .terraform/ 
 ├── .terraform.lock.hcl 
-├── dynamodb_table.tf 
+├── ec2.tf 
 ├── provider.tf 
 ├── README.md 
 ├── terraform.tfstate 
 ├── terraform.tfstate.backup 
 ├── variables.tf
+├── vpc.tf
 ```
 
 ## Files
-- `dynamodb_table.tf`: Defines the DynamoDB table resource.
+- `ec2.tf`: Defines the EC2 instance, and security group to be attached to EC2 instance.
+- `vpc.tf`: Defines the VPC, IGW, Subnets, and Route Table to be created.
 - `provider.tf`: Configures the AWS provider.
 - `variables.tf`: Contains the variables used in the project.
 - `.gitignore`: Specifies files and directories to be ignored by Git.
@@ -32,10 +34,10 @@ This project uses Terraform to create an EC2 instance on AWS.
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/javiguerra777/terraform-dynamodb-project.git
+    git clone https://github.com/javiguerra777/terraform-ec2-project.git
     ```
 
-2. After cloning the repository to your computer you will see a folder called `terraform-dynamodb-project`, open this folder in a code editor of choice. 
+2. After cloning the repository to your computer you will see a folder called `terraform-ec2-project`, open this folder in a code editor of choice. 
 
 3.  **Create a `variables.tf` file:**
     You will need to create a `variables.tf` file and structure it like this before you run the terraform project:
@@ -49,40 +51,20 @@ This project uses Terraform to create an EC2 instance on AWS.
     variable "region" {
       default = "aws region"
     }
-    variable "table_name" {
-      default = "table name"
+    variable "subnet_zone_1" {
+      default = "aws subnet zone 1"
     }
-
-    variable "billing_mode" {
-      default = valid options are: "PAY_PER_REQUEST" or "PROVISIONED"
+    variable "subnet_zone_2" {
+      default = "aws subnet zone 2"
     }
-
-    variable "partition_key" {
-      default = "name of partition key"
-    }
-
-    variable "sort_key" {
-      default = "name of sort key"
-    }
-
-    variable "read_capacity" {
-      default = 5
-      description = "Read Capacity Units"
-      type = number
-    }
-
-    variable "write_capacity" {
-      default = 5
-      description = "Write Capacity Units"
-      type = number
-    }
-
     variable "environment" {
-      default = "name of environment"
+      default = "project environment"
     }
-
     variable "project_name" {
-      default = "name of project"
+      default = "project name"
+    }
+    variable "ssh_key_name" {
+      default = "name of ssh key created"
     }
     ```
 
@@ -105,23 +87,30 @@ This project uses Terraform to create an EC2 instance on AWS.
 
 4. Confirm the apply step by typing `yes`.
 
-5. If you go to your AWS DynamoDB tables you can see the newest table you created
+5. If you go to your AWS VPC you will see the VPC, IGW, Subnets, and Route Table that were created
+
+6. If you go to your AWS EC2 you will see the EC2 instance and Security Group created, you should now be able to connec to your EC2 instance using SSH or Putty
 
 ## Variables
 
-- **table_name**: The name of the DynamoDB table.
-- **billing_mode**: The billing mode for the DynamoDB table (default: PAY_PER_REQUEST).
-- **partition_key**: The partition key for the DynamoDB table.
-- **sort_key**: The sort key for the DynamoDB table.
-- **read_capacity**: The read capacity units for the DynamoDB table (default: 5).
-- **write_capacity**: The write capacity units for the DynamoDB table (default: 5).
-- **environment**: The environment tag for the DynamoDB table.
-- **project_name**: The project name tag for the DynamoDB table.
+- **aws_access_key**: Your AWS access key for authentication.
+- **aws_secret_key**: Your AWS secret key.
+- **region**: The AWS region where resources are created.
+- **subnet_zone_1**: Availability Zone for the first subnet.
+- **subnet_zone_2**: Availability Zone for the second subnet.
+- **instance_type**: EC2 instance type.
+- **ami_id**: AMI ID to be used for the EC2 instance.
+- **ssh_key_name**: The name of the SSH key used to access the EC2 instance.
+- **security_group_name**: Name of the security group.
+- **environment**: The environment tag for your resources (e.g., `dev`, `prod`).
+- **project_name**: The project name tag.
+
 
 ## Outputs
 
-- **table_arn**: The ARN of the created DynamoDB table.
-- **table_name**: The name of the created DynamoDB table.
+- **instance_public_ip**: The public IP address of the created EC2 instance.
+- **vpc_id**: The ID of the created VPC.
+- **subnet_ids**: The IDs of the subnets created.
 
 ## Cleanup
 
